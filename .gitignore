@@ -1,0 +1,33 @@
+# Restricted-access survey microdata, GIS points, and all derived datasets
+data_raw/
+data_intermediate/
+data_clean/
+outputs/
+data_example/
+
+# R session and editor state
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+.Rcheck/
+.DS_Store
+
+# Local reports, exports, and archives
+*.rds
+*.RDS
+*.dta
+*.DTA
+*.sav
+*.shp
+*.shx
+*.dbf
+*.prj
+*.gpkg
+*.zip
+*.7z
+*.xlsx
+*.csv
+*.txt
+
+# Keep documentation in Markdown, not data exports.

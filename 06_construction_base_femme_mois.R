@@ -1,41 +1,41 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 06_construction_base_femme_mois.R
 #
-# Objectif :
-# Construire la base femme-mois centrale de l'analyse.
+# Objective:
+# Construct the central woman-month analysis dataset.
 #
-# Une observation = une femme pendant un mois donné.
+# One observation = one woman in a given month.
 #
-# Le mois correspond à l'axe temporel des conceptions
-# approximatives :
-# naissance observée - 9 mois.
+# The month represents the approximate conception timeline
+# :
+# observed birth minus 9 months.
 #
-# Pour chaque femme, on conserve uniquement les mois :
-# - appartenant à la fenêtre temporelle de son pays ;
-# - pendant lesquels elle est âgée de 15 à 39 ans.
+# For each woman, retain only months:
+# - within her country's observation window;
+# - during which she is aged 15–39.
 #
-# Les événements de naissance préparés au script 05
-# sont ensuite rattachés à leur mois approximatif
-# de conception.
+# Birth events prepared in script 05
+# are subsequently linked to their approximate
+# conception month.
 #
-# Entrées :
+# Inputs:
 # - data_intermediate/dhs_femmes_harmonisees.rds
 # - data_intermediate/dhs_evenements_naissance_analyse.rds
 # - data_intermediate/fenetres_analyse.rds
 #
-# Sortie :
+# Output:
 # - data_intermediate/base_femme_mois_15_39.rds
 #
-# Important :
-# - Les femmes sans naissance sont conservées.
-# - Les naissances multiples sont conservées.
-# - Les données brutes DHS ne sont jamais modifiées.
+# Important:
+# - Women without births are retained.
+# - Multiple births are retained.
+# - Raw DHS data are never modified.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages
+# 1. Load packages
 # ------------------------------------------------------------
 
 library(dplyr)
@@ -43,7 +43,7 @@ library(tidyr)
 
 
 # ------------------------------------------------------------
-# 2. Définir les chemins d'entrée
+# 2. Define input paths
 # ------------------------------------------------------------
 
 path_femmes <-
@@ -57,7 +57,7 @@ path_fenetres <-
 
 
 # ------------------------------------------------------------
-# 3. Vérifier que les fichiers existent
+# 3. Check that files exist
 # ------------------------------------------------------------
 
 stopifnot(
@@ -68,7 +68,7 @@ stopifnot(
 
 
 # ------------------------------------------------------------
-# 4. Importer les bases intermédiaires
+# 4. Import intermediate datasets
 # ------------------------------------------------------------
 
 femmes <- readRDS(path_femmes)
@@ -79,7 +79,7 @@ fenetres <- readRDS(path_fenetres)
 
 
 # ------------------------------------------------------------
-# 5. Vérifier les données importées
+# 5. Check imported data
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -114,7 +114,7 @@ evenements %>%
 
 
 # ------------------------------------------------------------
-# 6. Ajouter à chaque femme la fenêtre temporelle de son pays
+# 6. Add each woman's country-specific observation window
 # ------------------------------------------------------------
 
 femmes_temp <- femmes %>%
@@ -130,7 +130,7 @@ femmes_temp <- femmes %>%
 
 
 # ------------------------------------------------------------
-# 7. Vérifier que toutes les femmes ont reçu une fenêtre
+# 7. Check that all women have an observation window
 # ------------------------------------------------------------
 
 cat(
@@ -147,7 +147,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 8. Vérifier les dates de naissance des femmes
+# 8. Check women's dates of birth
 # ------------------------------------------------------------
 
 cat(
@@ -158,44 +158,44 @@ cat(
 
 
 # ------------------------------------------------------------
-# 9. Déterminer les mois d'éligibilité de chaque femme
+# 9. Determine each woman's eligible months
 #
-# 15 ans = 15 * 12 = 180 mois
+# 15 years = 15 * 12 = 180 months
 #
-# Une femme est retenue tant que son âge est strictement
-# inférieur à 40 ans.
+# A woman is retained as long as her age is strictly
+# under 40 years.
 #
-# Le dernier mois admissible correspond donc au mois 479
-# après son mois de naissance.
+# The last eligible month is therefore month 479
+# after her birth month.
 # ------------------------------------------------------------
 
 femmes_temp <- femmes_temp %>%
   mutate(
     
-    # Premier mois approximatif à partir duquel
-    # la femme a 15 ans
+    # First approximate month from which
+    # the woman turns 15
     debut_age_cmc =
       naissance_femme_cmc + 180,
     
-    # Dernier mois avant 40 ans
+    # Last month before turning 40
     fin_age_cmc =
       naissance_femme_cmc + 479,
     
-    # Premier mois réellement retenu
+    # First month actually included
     debut_femme_cmc =
       pmax(
         debut_analyse_cmc,
         debut_age_cmc
       ),
     
-    # Dernier mois réellement retenu
+    # Last month actually included
     fin_femme_cmc =
       pmin(
         fin_analyse_cmc,
         fin_age_cmc
       ),
     
-    # Nombre total de mois de contribution
+    # Total months contributed
     n_mois =
       fin_femme_cmc -
       debut_femme_cmc +
@@ -204,7 +204,7 @@ femmes_temp <- femmes_temp %>%
 
 
 # ------------------------------------------------------------
-# 10. Contrôler les femmes ayant au moins un mois éligible
+# 10. Check women with at least one eligible month
 # ------------------------------------------------------------
 
 controle_femmes_eligibles <- femmes_temp %>%
@@ -255,8 +255,8 @@ print(controle_femmes_eligibles)
 
 
 # ------------------------------------------------------------
-# 11. Conserver uniquement les femmes contribuant
-# à au moins un mois
+# 11. Retain only contributing women
+# to at least one month
 # ------------------------------------------------------------
 
 femmes_eligibles <- femmes_temp %>%
@@ -267,12 +267,12 @@ femmes_eligibles <- femmes_temp %>%
 
 
 # ------------------------------------------------------------
-# 12. Développer chaque femme en observations femme-mois
+# 12. Expand each woman into woman-month records
 #
-# Exemple :
+# Example:
 #
-# Une femme ayant 100 mois éligibles
-# devient 100 lignes.
+# A woman with 100 eligible months
+# becomes 100 rows.
 # ------------------------------------------------------------
 
 base_femme_mois <- femmes_eligibles %>%
@@ -285,7 +285,7 @@ base_femme_mois <- femmes_eligibles %>%
     caseid,
     id_femme,
     
-    # Sondage et géographie
+    # Survey design and geography
     cluster,
     menage,
     numero_femme,
@@ -295,20 +295,20 @@ base_femme_mois <- femmes_eligibles %>%
     region,
     residence,
     
-    # Poids DHS
+    # DHS sampling weights
     poids_brut,
     poids,
     
-    # Informations temporelles sur la femme
+    # Woman's temporal information
     interview_cmc,
     naissance_femme_cmc,
     age_enquete,
     
-    # Bornes individuelles
+    # Individual bounds
     debut_femme_cmc,
     fin_femme_cmc,
     
-    # Nombre de mois à créer
+    # Number of months to create
     n_mois
   ) %>%
   
@@ -327,8 +327,8 @@ base_femme_mois <- femmes_eligibles %>%
 
 
 # ------------------------------------------------------------
-# 13. Créer des identifiants géographiques uniques
-# entre les trois pays
+# 13. Create unique geographic identifiers
+# across the three countries
 # ------------------------------------------------------------
 
 base_femme_mois <- base_femme_mois %>%
@@ -351,7 +351,7 @@ base_femme_mois <- base_femme_mois %>%
 
 
 # ------------------------------------------------------------
-# 14. Recalculer l'âge de la femme pour chaque mois
+# 14. Recalculate women's age for each month
 # ------------------------------------------------------------
 
 base_femme_mois <- base_femme_mois %>%
@@ -361,13 +361,13 @@ base_femme_mois <- base_femme_mois %>%
       mois_cmc -
       naissance_femme_cmc,
     
-    # Age révolu approximatif en années
+    # Approximate age in completed years
     age =
       floor(
         age_mois / 12
       ),
     
-    # Groupes d'âge quinquennaux
+    # Five-year age groups
     groupe_age =
       cut(
         age,
@@ -395,7 +395,7 @@ base_femme_mois <- base_femme_mois %>%
 
 
 # ------------------------------------------------------------
-# 15. Transformer le CMC en année et mois
+# 15. Convert CMC to year and month
 # ------------------------------------------------------------
 
 base_femme_mois <- base_femme_mois %>%
@@ -418,7 +418,7 @@ base_femme_mois <- base_femme_mois %>%
 
 
 # ------------------------------------------------------------
-# 16. Contrôle de la base AVANT ajout des naissances
+# 16. Check dataset BEFORE adding births
 # ------------------------------------------------------------
 
 controle_base <- base_femme_mois %>%
@@ -455,7 +455,7 @@ print(controle_base)
 
 
 # ------------------------------------------------------------
-# 17. Vérifier explicitement la restriction 15-39 ans
+# 17. Explicitly check the 15–39 age restriction
 # ------------------------------------------------------------
 
 controle_age_hors_champ <- base_femme_mois %>%
@@ -474,7 +474,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 18. Vérifier l'absence de doublons femme-mois
+# 18. Check for duplicate woman-month records
 # ------------------------------------------------------------
 
 doublons_femme_mois <- base_femme_mois %>%
@@ -496,10 +496,10 @@ cat(
 
 
 # ------------------------------------------------------------
-# 19. Agréger les événements de naissance par femme et mois
+# 19. Aggregate birth events by woman and month
 #
-# Plusieurs naissances peuvent être observées dans
-# un même femme-mois en cas de naissance multiple.
+# Multiple births may be observed within
+# one woman-month in the case of a multiple birth.
 # ------------------------------------------------------------
 
 naissances_femme_mois <- evenements %>%
@@ -512,8 +512,8 @@ naissances_femme_mois <- evenements %>%
 
 
 # ------------------------------------------------------------
-# 20. Vérifier que tous les événements correspondent
-# à un femme-mois existant
+# 20. Check that all events match
+# to an existing woman-month record
 # ------------------------------------------------------------
 
 evenements_non_matches <- naissances_femme_mois %>%
@@ -542,7 +542,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 21. Ajouter les naissances à la base femme-mois
+# 21. Add births to woman-month data
 # ------------------------------------------------------------
 
 base_femme_mois <- base_femme_mois %>%
@@ -569,7 +569,7 @@ base_femme_mois <- base_femme_mois %>%
 
 
 # ------------------------------------------------------------
-# 22. Vérifier le nombre de naissances retrouvé
+# 22. Check number of matched births
 # ------------------------------------------------------------
 
 controle_naissances <- base_femme_mois %>%
@@ -589,7 +589,7 @@ controle_naissances <- base_femme_mois %>%
   )
 
 
-# Nombre attendu directement depuis le script 05
+# Expected count taken directly from script 05
 naissances_attendues <- evenements %>%
   count(
     pays,
@@ -631,8 +631,8 @@ cat(
 
 
 # ------------------------------------------------------------
-# 23. Distribution du nombre de naissances
-# par femme-mois
+# 23. Distribution of birth counts
+# per woman-month
 # ------------------------------------------------------------
 
 distribution_naissances <- base_femme_mois %>%
@@ -655,7 +655,7 @@ print(distribution_naissances)
 
 
 # ------------------------------------------------------------
-# 24. Vérifier la répartition par groupe d'âge
+# 24. Check distribution by age group
 # ------------------------------------------------------------
 
 controle_groupes_age <- base_femme_mois %>%
@@ -678,7 +678,7 @@ print(controle_groupes_age)
 
 
 # ------------------------------------------------------------
-# 25. Vérification finale des périodes
+# 25. Final check of time periods
 # ------------------------------------------------------------
 
 controle_periodes_final <- base_femme_mois %>%
@@ -706,7 +706,7 @@ print(controle_periodes_final)
 
 
 # ------------------------------------------------------------
-# 26. Sauvegarder les tableaux de contrôle
+# 26. Save validation tables
 # ------------------------------------------------------------
 
 write.csv(
@@ -735,7 +735,7 @@ write.csv(
 
 
 # ------------------------------------------------------------
-# 27. Sauvegarder la base femme-mois
+# 27. Save woman-month data
 # ------------------------------------------------------------
 
 saveRDS(
@@ -745,7 +745,7 @@ saveRDS(
 
 
 # ------------------------------------------------------------
-# 28. Résumé final
+# 28. Final summary
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

@@ -1,13 +1,13 @@
 # ============================================================
 # 13_appariement_femme_mois_ebola.R
-# Appariement de la base femme-mois DHS
-# avec l'exposition mensuelle locale à Ebola
+# Linking the DHS woman-month dataset
+# with local monthly Ebola exposure
 # ============================================================
 
 library(dplyr)
 
 # ------------------------------------------------------------
-# 1. Importation des bases nécessaires
+# 1. Import required datasets
 # ------------------------------------------------------------
 
 femme_mois <- readRDS(
@@ -23,7 +23,7 @@ backer_mensuel <- readRDS(
 )
 
 # ------------------------------------------------------------
-# 2. Vérification des dimensions
+# 2. Check dimensions
 # ------------------------------------------------------------
 
 cat("Dimensions femme_mois :", dim(femme_mois), "\n")
@@ -31,7 +31,7 @@ cat("Dimensions crosswalk :", dim(crosswalk), "\n")
 cat("Dimensions Backer mensuel :", dim(backer_mensuel), "\n")
 
 # ------------------------------------------------------------
-# 3. Vérification des noms de variables
+# 3. Check variable names
 # ------------------------------------------------------------
 
 cat("\nVariables femme_mois :\n")
@@ -44,10 +44,10 @@ cat("\nVariables Backer mensuel :\n")
 print(names(backer_mensuel))
 
 # ------------------------------------------------------------
-# 4. Contrôle des clés de jointure
+# 4. Check join keys
 # ------------------------------------------------------------
 
-# Crosswalk : une seule ligne par pays × cluster
+# Crosswalk: one row per country × cluster
 controle_crosswalk <- crosswalk %>%
   count(pays, cluster) %>%
   filter(n > 1)
@@ -58,7 +58,7 @@ cat(
   "\n"
 )
 
-# Backer mensuel : une seule ligne par pays × unité × mois
+# Monthly Backer data: one row per country × area × month
 controle_backer <- backer_mensuel %>%
   count(pays, unite_backer, annee_mois) %>%
   filter(n > 1)
@@ -70,7 +70,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 5. Jointure de la géographie Backer à la base femme-mois
+# 5. Join Backer geography to woman-month data
 # ------------------------------------------------------------
 
 femme_mois_geo <- femme_mois %>%
@@ -87,7 +87,7 @@ femme_mois_geo <- femme_mois %>%
   )
 
 # ------------------------------------------------------------
-# 6. Contrôles après jointure géographique
+# 6. Checks after geographic join
 # ------------------------------------------------------------
 
 cat(
@@ -119,7 +119,7 @@ controle_geo_pays <- femme_mois_geo %>%
 print(controle_geo_pays)
 
 # ------------------------------------------------------------
-# 7. Jointure avec l'exposition mensuelle Ebola
+# 7. Join monthly Ebola exposure
 # ------------------------------------------------------------
 
 femme_mois_ebola <- femme_mois_geo %>%
@@ -141,7 +141,7 @@ femme_mois_ebola <- femme_mois_geo %>%
   )
 
 # ------------------------------------------------------------
-# 8. Contrôles après jointure Ebola
+# 8. Checks after Ebola join
 # ------------------------------------------------------------
 
 cat(
@@ -190,41 +190,41 @@ controle_periode <- femme_mois_ebola %>%
 print(controle_periode)
 
 # ------------------------------------------------------------
-# 9. Création d'un statut de couverture de l'exposition Ebola
+# 9. Create Ebola exposure coverage status
 # ------------------------------------------------------------
 
 femme_mois_ebola <- femme_mois_ebola %>%
   mutate(
     statut_exposition = case_when(
       
-      # Pas d'unité Backer disponible : principalement Mandiana
+      # No Backer area available: mainly Mandiana
       is.na(unite_backer) ~ "unite_non_couverte_backer",
       
-      # Mois en dehors de la période couverte par Backer
+      # Month outside the period covered by Backer
       annee_mois < "2013-12" | annee_mois > "2015-05" ~
         "hors_periode_backer",
       
-      # Mois couvert, unité couverte, mais aucun cas enregistré
+      # Covered month and area with no recorded cases
       !is.na(cas_mois) & cas_mois == 0 ~
         "zero_cas_observe",
       
-      # Mois couvert avec au moins un cas
+      # Covered month with at least one case
       !is.na(cas_mois) & cas_mois > 0 ~
         "cas_observes",
       
-      # Sécurité : tout autre cas inattendu
+      # Safeguard: any other unexpected case
       TRUE ~ "manquant_inattendu"
     )
   )
 
-# Contrôle
+# Validation
 controle_statut <- femme_mois_ebola %>%
   count(pays, statut_exposition)
 
 print(controle_statut)
 
 # ------------------------------------------------------------
-# 10. Distinguer la période avant et après la couverture Backer
+# 10. Distinguish periods before and after Backer coverage
 # ------------------------------------------------------------
 
 femme_mois_ebola <- femme_mois_ebola %>%
@@ -257,7 +257,7 @@ controle_statut2 <- femme_mois_ebola %>%
 print(controle_statut2)
 
 # ------------------------------------------------------------
-# 11. Construction de l'exposition mensuelle finale
+# 11. Construct final monthly exposure
 # ------------------------------------------------------------
 
 femme_mois_ebola <- femme_mois_ebola %>%
@@ -291,7 +291,7 @@ controle_exposition_finale <- femme_mois_ebola %>%
 print(controle_exposition_finale)
 
 # ------------------------------------------------------------
-# 12. Sauvegarde de la base femme-mois avec exposition Ebola
+# 12. Save woman-month data with Ebola exposure
 # ------------------------------------------------------------
 
 saveRDS(

@@ -1,34 +1,34 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 03_harmonisation_dhs.R
 #
-# Objectif :
-# Harmoniser les fichiers DHS IR et BR de la Guinée,
-# du Liberia et de la Sierra Leone.
+# Objective:
+# Harmonise DHS IR and BR files for Guinea,
+# of Liberia and Sierra Leone.
 #
-# Entrées :
+# Inputs:
 # - gn_ir, lb_ir, sl_ir
 # - gn_br, lb_br, sl_br
 #
-# Sorties :
+# Outputs:
 # - data_intermediate/dhs_femmes_harmonisees.rds
 # - data_intermediate/dhs_naissances_harmonisees.rds
 #
-# Important :
-# Les fichiers bruts DHS ne sont jamais modifiés.
+# Important:
+# Raw DHS files are never modified.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages
+# 1. Load packages
 # ------------------------------------------------------------
 
 library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Fonction d'harmonisation du fichier IR
-# 1 ligne = 1 femme
+# 2. Function to harmonise IR data
+# One row = one woman
 # ------------------------------------------------------------
 
 harmoniser_ir <- function(data, pays, code_pays) {
@@ -42,10 +42,10 @@ harmoniser_ir <- function(data, pays, code_pays) {
       
       caseid = as.character(caseid),
       
-      # Identifiant unique entre les trois pays
+      # Unique identifier across the three countries
       id_femme = paste0(code_pays, "_", as.character(caseid)),
       
-      # Plan de sondage DHS
+      # DHS survey design
       cluster = as.numeric(v001),
       menage = as.numeric(v002),
       numero_femme = as.numeric(v003),
@@ -58,16 +58,16 @@ harmoniser_ir <- function(data, pays, code_pays) {
       region = as.numeric(v024),
       residence = as.numeric(v025),
       
-      # Poids DHS
+      # DHS sampling weights
       poids_brut = as.numeric(v005),
       poids = as.numeric(v005) / 1000000,
       
-      # Date de l'entretien
+      # Interview date
       interview_mois = as.numeric(v006),
       interview_annee = as.numeric(v007),
       interview_cmc = as.numeric(v008),
       
-      # Date de naissance et âge de la femme
+      # Woman's date of birth and age
       naissance_femme_cmc = as.numeric(v011),
       age_enquete = as.numeric(v012)
     )
@@ -75,7 +75,7 @@ harmoniser_ir <- function(data, pays, code_pays) {
 
 
 # ------------------------------------------------------------
-# 3. Harmoniser les fichiers IR
+# 3. Harmonise IR files
 # ------------------------------------------------------------
 
 femmes_gn <- harmoniser_ir(
@@ -98,7 +98,7 @@ femmes_sl <- harmoniser_ir(
 
 
 # ------------------------------------------------------------
-# 4. Regrouper les trois pays
+# 4. Combine all three countries
 # ------------------------------------------------------------
 
 dhs_femmes <- bind_rows(
@@ -109,7 +109,7 @@ dhs_femmes <- bind_rows(
 
 
 # ------------------------------------------------------------
-# 5. Vérifications de la base femmes
+# 5. Checks of women's dataset
 # ------------------------------------------------------------
 
 cat("\n==============================\n")
@@ -127,8 +127,8 @@ cat("\nDoublons id_femme :",
 
 
 # ------------------------------------------------------------
-# 6. Fonction d'harmonisation du fichier BR
-# 1 ligne = 1 naissance vivante déclarée
+# 6. Function to harmonise BR data
+# One row = one reported live birth
 # ------------------------------------------------------------
 
 harmoniser_br <- function(data, pays, code_pays) {
@@ -144,33 +144,33 @@ harmoniser_br <- function(data, pays, code_pays) {
       
       id_femme = paste0(code_pays, "_", as.character(caseid)),
       
-      # Identification de la naissance
+      # Birth identification
       index_naissance = as.numeric(bidx),
       rang_naissance = as.numeric(bord),
       naissance_multiple = as.numeric(b0),
       
-      # Date de naissance de l'enfant
+      # Child's date of birth
       naissance_mois = as.numeric(b1),
       naissance_annee = as.numeric(b2),
       naissance_cmc = as.numeric(b3),
       
-      # Géographie / sondage de la mère
+      # Mother's geography / survey design
       cluster = as.numeric(v001),
       menage = as.numeric(v002),
       numero_femme = as.numeric(v003),
       
-      # Poids DHS de la mère
+      # Mother's DHS sampling weight
       poids_brut = as.numeric(v005),
       poids = as.numeric(v005) / 1000000,
       
-      # Date de l'enquête
+      # Survey date
       interview_cmc = as.numeric(v008),
       
-      # Date de naissance de la mère
+      # Mother's date of birth
       naissance_femme_cmc = as.numeric(v011)
     ) %>%
     
-    # Identifiant unique de chaque événement de naissance
+    # Unique identifier for each birth event
     mutate(
       id_naissance = paste0(
         id_femme,
@@ -182,7 +182,7 @@ harmoniser_br <- function(data, pays, code_pays) {
 
 
 # ------------------------------------------------------------
-# 7. Harmoniser les fichiers BR
+# 7. Harmonise BR files
 # ------------------------------------------------------------
 
 naissances_gn <- harmoniser_br(
@@ -205,7 +205,7 @@ naissances_sl <- harmoniser_br(
 
 
 # ------------------------------------------------------------
-# 8. Regrouper les trois pays
+# 8. Combine all three countries
 # ------------------------------------------------------------
 
 dhs_naissances <- bind_rows(
@@ -216,7 +216,7 @@ dhs_naissances <- bind_rows(
 
 
 # ------------------------------------------------------------
-# 9. Vérifications de la base naissances
+# 9. Checks of birth dataset
 # ------------------------------------------------------------
 
 cat("\n==============================\n")
@@ -234,7 +234,7 @@ cat("\nDoublons id_naissance :",
 
 
 # ------------------------------------------------------------
-# 10. Vérifier que toutes les mères du BR existent dans l'IR
+# 10. Check that all BR mothers appear in IR
 # ------------------------------------------------------------
 
 controle_meres <- dhs_naissances %>%
@@ -252,7 +252,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 11. Sauvegarde des bases intermédiaires
+# 11. Save intermediate datasets
 # ------------------------------------------------------------
 
 saveRDS(
@@ -267,7 +267,7 @@ saveRDS(
 
 
 # ------------------------------------------------------------
-# 12. Fin
+# 12. End
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

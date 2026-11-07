@@ -1,46 +1,46 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 02_definition_fenetres_temporelles.R
 #
-# Objectif :
-# Déterminer la fenêtre temporelle maximale théoriquement
-# exploitable pour chaque pays.
+# Objective:
+# Determine the maximum theoretically
+# usable observation window for each country.
 #
-# Population principale :
-# Femmes âgées de 15 à 39 ans au mois historique considéré.
+# Main population:
+# Women aged 15–39 in the historical month considered.
 #
-# Règles :
-# - Début = dernière interview DHS - 120 mois
-#   afin de préserver la couverture des femmes de 15-39 ans.
+# Rules:
+# - Start = latest DHS interview minus 120 months
+#   to preserve coverage of women aged 15–39.
 #
-# - Fin = première interview DHS - 9 mois
-#   afin de laisser le temps aux conceptions de se traduire
-#   par une naissance observable avant l'entretien.
+# - End = earliest DHS interview minus 9 months
+#   to allow time for conceptions to result
+#   in an observable birth before the interview.
 #
-# Entrées :
-# Objets IR importés dans le script 01 :
+# Inputs:
+# IR objects imported in script 01:
 # gn_ir, lb_ir, sl_ir
 #
-# Sorties :
+# Outputs:
 # data_intermediate/fenetres_analyse.rds
 # outputs/tables/fenetres_analyse.csv
 #
-# Important :
-# Il s'agit d'une fenêtre théorique.
-# Elle sera ensuite vérifiée empiriquement dans la base
-# femme-mois.
+# Important:
+# This is a theoretical observation window.
+# It will subsequently be checked empirically in the dataset
+# woman-months.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages
+# 1. Load packages
 # ------------------------------------------------------------
 
 library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Fonction de conversion du CMC DHS en année-mois
+# 2. Function to convert DHS CMC to year-month
 # ------------------------------------------------------------
 
 cmc_vers_annee_mois <- function(cmc) {
@@ -53,31 +53,31 @@ cmc_vers_annee_mois <- function(cmc) {
 
 
 # ------------------------------------------------------------
-# 3. Fonction de calcul de la fenêtre d'un pays
+# 3. Function to calculate a country's observation window
 # ------------------------------------------------------------
 
 calculer_fenetre <- function(data, pays) {
   
-  # Première interview observée dans le pays
+  # Earliest interview observed in the country
   premiere_interview <- min(
     as.numeric(data$v008),
     na.rm = TRUE
   )
   
-  # Dernière interview observée dans le pays
+  # Latest interview observed in the country
   derniere_interview <- max(
     as.numeric(data$v008),
     na.rm = TRUE
   )
   
-  # Début :
-  # 10 ans avant la dernière interview
+  # Start:
+  # 10 years before the latest interview
   debut_analyse <- derniere_interview - 120
   
 
-  # Fin :
-  # le mois d'interview est incomplet,
-  # donc on retire 10 mois au total
+  # End:
+  # the interview month is incomplete,
+  # therefore we subtract 10 months in total
   fin_analyse <- premiere_interview - 10
   
   tibble(
@@ -98,7 +98,7 @@ calculer_fenetre <- function(data, pays) {
 }
 
 # ------------------------------------------------------------
-# 4. Calculer la fenêtre pour les trois pays
+# 4. Calculate observation windows for all three countries
 # ------------------------------------------------------------
 
 fenetre_gn <- calculer_fenetre(
@@ -118,7 +118,7 @@ fenetre_sl <- calculer_fenetre(
 
 
 # ------------------------------------------------------------
-# 5. Regrouper les trois pays
+# 5. Combine all three countries
 # ------------------------------------------------------------
 
 fenetres_analyse <- bind_rows(
@@ -129,14 +129,14 @@ fenetres_analyse <- bind_rows(
 
 
 # ------------------------------------------------------------
-# 6. Afficher les résultats
+# 6. Display results
 # ------------------------------------------------------------
 
 print(fenetres_analyse)
 
 
 # ------------------------------------------------------------
-# 7. Affichage simplifié
+# 7. Simplified display
 # ------------------------------------------------------------
 
 fenetres_analyse %>%
@@ -151,7 +151,7 @@ fenetres_analyse %>%
 
 
 # ------------------------------------------------------------
-# 8. Sauvegarder les résultats
+# 8. Save results
 # ------------------------------------------------------------
 
 saveRDS(
@@ -167,7 +167,7 @@ write.csv(
 
 
 # ------------------------------------------------------------
-# 9. Fin du script
+# 9. End of script
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

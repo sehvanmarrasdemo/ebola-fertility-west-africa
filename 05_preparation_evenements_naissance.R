@@ -1,39 +1,39 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 05_preparation_evenements_naissance.R
 #
-# Objectif :
-# Préparer les événements de naissance utilisés dans l'analyse.
+# Objective:
+# Prepare birth events used in the analysis.
 #
-# Pour chaque naissance :
-# - calculer le mois approximatif de conception (-9 mois)
-# - calculer l'âge de la mère au mois de conception
-# - appliquer la fenêtre temporelle propre à chaque pays
-# - retenir les conceptions lorsque la femme a 15-39 ans
+# For each birth:
+# - calculate approximate conception month (-9 months)
+# - calculate the mother's age at conception month
+# - apply each country's observation window
+# - retain conceptions when the woman is aged 15–39
 #
-# Entrées :
+# Inputs:
 # data_intermediate/dhs_naissances_harmonisees.rds
 # data_intermediate/fenetres_analyse.rds
 #
-# Sortie :
+# Output:
 # data_intermediate/dhs_evenements_naissance_analyse.rds
 #
-# Important :
-# Les naissances multiples sont conservées.
-# Une naissance gémellaire correspond donc à plusieurs
-# naissances observées dans un même femme-mois.
+# Important:
+# Multiple births are retained.
+# A twin birth therefore corresponds to multiple
+# births observed in the same woman-month.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger le package
+# 1. Load the package
 # ------------------------------------------------------------
 
 library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Importer les données intermédiaires
+# 2. Import intermediate data
 # ------------------------------------------------------------
 
 dhs_naissances <- readRDS(
@@ -46,7 +46,7 @@ fenetres_analyse <- readRDS(
 
 
 # ------------------------------------------------------------
-# 3. Vérifier les données importées
+# 3. Check imported data
 # ------------------------------------------------------------
 
 cat("\nNombre total de naissances importées :",
@@ -56,7 +56,7 @@ print(fenetres_analyse)
 
 
 # ------------------------------------------------------------
-# 4. Ajouter les bornes temporelles propres à chaque pays
+# 4. Add country-specific observation bounds
 # ------------------------------------------------------------
 
 naissances_temp <- dhs_naissances %>%
@@ -71,19 +71,19 @@ naissances_temp <- dhs_naissances %>%
   )
 
 
-# Vérifier que toutes les observations ont reçu une fenêtre
+# Check that all observations were assigned an observation window
 sum(is.na(naissances_temp$debut_analyse_cmc))
 sum(is.na(naissances_temp$fin_analyse_cmc))
 
 
 # ------------------------------------------------------------
-# 5. Construire le mois approximatif de conception
+# 5. Construct approximate conception month
 #
-# Hypothèse principale :
-# conception ≈ naissance - 9 mois
+# Main assumption:
+# conception ≈ birth minus 9 months
 #
-# Des analyses de robustesse à -8 et -10 mois seront
-# réalisées plus tard.
+# Robustness checks using -8 and -10 months will be
+# performed later.
 # ------------------------------------------------------------
 
 naissances_temp <- naissances_temp %>%
@@ -93,7 +93,7 @@ naissances_temp <- naissances_temp %>%
 
 
 # ------------------------------------------------------------
-# 6. Calculer l'âge de la mère au mois de conception
+# 6. Calculate mother's age at conception month
 # ------------------------------------------------------------
 
 naissances_temp <- naissances_temp %>%
@@ -107,7 +107,7 @@ naissances_temp <- naissances_temp %>%
 
 
 # ------------------------------------------------------------
-# 7. Transformer le CMC de conception en année et mois
+# 7. Convert conception CMC to year and month
 # ------------------------------------------------------------
 
 naissances_temp <- naissances_temp %>%
@@ -129,7 +129,7 @@ naissances_temp <- naissances_temp %>%
 
 
 # ------------------------------------------------------------
-# 8. Identifier les observations éligibles
+# 8. Identify eligible observations
 # ------------------------------------------------------------
 
 naissances_temp <- naissances_temp %>%
@@ -146,7 +146,7 @@ naissances_temp <- naissances_temp %>%
 
 
 # ------------------------------------------------------------
-# 9. Contrôle avant filtrage
+# 9. Check before filtering
 # ------------------------------------------------------------
 
 controle_selection <- naissances_temp %>%
@@ -178,7 +178,7 @@ print(controle_selection)
 
 
 # ------------------------------------------------------------
-# 10. Créer la base finale des événements de naissance
+# 10. Create the final birth-event dataset
 # ------------------------------------------------------------
 
 evenements_naissance <- naissances_temp %>%
@@ -189,7 +189,7 @@ evenements_naissance <- naissances_temp %>%
 
 
 # ------------------------------------------------------------
-# 11. Vérifier la période réellement obtenue
+# 11. Check the actual observation period
 # ------------------------------------------------------------
 
 controle_periode <- evenements_naissance %>%
@@ -216,11 +216,11 @@ print(controle_periode)
 
 
 # ------------------------------------------------------------
-# 12. Vérifier les naissances multiples
+# 12. Check multiple births
 #
-# Plusieurs lignes pour la même femme et le même mois
-# ne constituent pas nécessairement un doublon :
-# il peut s'agir de jumeaux ou d'autres naissances multiples.
+# Multiple rows for the same woman and month
+# do not necessarily indicate a duplicate:
+# they may represent twins or other multiple births.
 # ------------------------------------------------------------
 
 controle_multiples <- evenements_naissance %>%
@@ -248,7 +248,7 @@ print(controle_multiples)
 
 
 # ------------------------------------------------------------
-# 13. Sauvegarder la base
+# 13. Save the dataset
 # ------------------------------------------------------------
 
 saveRDS(
@@ -258,7 +258,7 @@ saveRDS(
 
 
 # ------------------------------------------------------------
-# 14. Sauvegarder le contrôle de sélection
+# 14. Save the selection validation
 # ------------------------------------------------------------
 
 write.csv(
@@ -269,7 +269,7 @@ write.csv(
 
 
 # ------------------------------------------------------------
-# 15. Fin
+# 15. End
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

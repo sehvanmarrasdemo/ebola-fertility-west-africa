@@ -1,39 +1,39 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 08_preparation_geographie_backer.R
 #
-# Objectif :
-# Préparer les unités géographiques utilisées dans les
-# données Backer et les comparer aux informations
-# administratives disponibles dans les fichiers GPS DHS.
+# Objective:
+# Prepare geographic areas used in the
+# Backer data and compare them with information
+# administrative fields available in DHS GPS files.
 #
-# Pays :
-# - Guinée
+# Countries:
+# - Guinea
 # - Liberia
 # - Sierra Leone
 #
-# Entrées :
+# Inputs:
 # - data_raw/backer/countryeboladata.txt
 # - data_intermediate/gps_clusters_dhs_harmonises.rds
 #
-# Sorties prévues :
+# Expected outputs:
 # - data_intermediate/backer_unites_3pays.rds
 # - outputs/tables/backer_unites_3pays.csv
 #
-# Important :
-# Aucune jointure spatiale définitive n'est effectuée ici.
+# Important:
+# No final spatial join is performed here.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages
+# 1. Load packages
 # ------------------------------------------------------------
 
 library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Définir les chemins
+# 2. Define paths
 # ------------------------------------------------------------
 
 path_backer <-
@@ -44,7 +44,7 @@ path_gps <-
 
 
 # ------------------------------------------------------------
-# 3. Vérifier la présence des fichiers
+# 3. Check file presence
 # ------------------------------------------------------------
 
 stopifnot(
@@ -54,7 +54,7 @@ stopifnot(
 
 
 # ------------------------------------------------------------
-# 4. Importer le fichier Backer
+# 4. Import Backer file
 # ------------------------------------------------------------
 
 backer_raw <- read.delim(
@@ -65,8 +65,8 @@ backer_raw <- read.delim(
 )
 
 
-# Si le fichier n'a pas été reconnu comme tabulé,
-# essayer une lecture par espaces
+# If the file was not recognised as tab-separated,
+# try reading it as space-separated data
 if (ncol(backer_raw) == 1) {
   
   backer_raw <- read.table(
@@ -79,7 +79,7 @@ if (ncol(backer_raw) == 1) {
 
 
 # ------------------------------------------------------------
-# 5. Vérifier les dimensions
+# 5. Check dimensions
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -100,7 +100,7 @@ cat(
 
 print(names(backer_raw))
 # ------------------------------------------------------------
-# 6. Vérifier les variables indispensables
+# 6. Check required variables
 # ------------------------------------------------------------
 
 variables_attendues <- c(
@@ -123,7 +123,7 @@ cat(
 
 print(variables_absentes)
 # ------------------------------------------------------------
-# 7. Identifier les variables hebdomadaires W1 à W74
+# 7. Identify weekly variables W1 through W74
 # ------------------------------------------------------------
 
 variables_semaines <- names(backer_raw)[
@@ -131,7 +131,7 @@ variables_semaines <- names(backer_raw)[
 ]
 
 
-# Les remettre dans l'ordre numérique
+# Put them back into numerical order
 numero_semaine <- as.numeric(
   sub("W", "", variables_semaines)
 )
@@ -160,7 +160,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 8. Harmoniser les noms des pays
+# 8. Harmonise country names
 # ------------------------------------------------------------
 
 backer_raw <- backer_raw %>%
@@ -191,24 +191,24 @@ backer_raw <- backer_raw %>%
   )
 
 
-# Vérifier
+# Verify
 table(
   backer_raw$country,
   backer_raw$pays,
   useNA = "ifany"
 )
 # ------------------------------------------------------------
-# 9. Construire une base d'une ligne par unité Backer
+# 9. Create a dataset with one row per Backer area
 # ------------------------------------------------------------
 
 backer_unites <- backer_raw %>%
   mutate(
     
-    # Population dans Backer exprimée en milliers
+    # Population in Backer is expressed in thousands
     population =
       as.numeric(pop.size) * 1000,
     
-    # Total brut des cas observés dans W1-W74
+    # Raw total cases observed across W1–W74
     total_cases_raw =
       rowSums(
         across(
@@ -223,8 +223,8 @@ backer_unites <- backer_raw %>%
     
     pays,
     
-    # Le nom générique "prefecture" est utilisé dans
-    # le fichier Backer pour les unités des trois pays
+    # The generic name "prefecture" is used in
+    # the Backer file for areas in all three countries
     unite_backer =
       as.character(prefecture),
     
@@ -242,7 +242,7 @@ backer_unites <- backer_raw %>%
     total_cases_raw
   )
 # ------------------------------------------------------------
-# 10. Nombre d'unités Backer par pays
+# 10. Number of Backer areas by country
 # ------------------------------------------------------------
 
 controle_unites_backer <- backer_unites %>%
@@ -258,7 +258,7 @@ cat("========================================\n")
 
 print(controle_unites_backer)
 # ------------------------------------------------------------
-# 11. Vérifier l'unicité des unités
+# 11. Check uniqueness of areas
 # ------------------------------------------------------------
 
 doublons_unites <- backer_unites %>%
@@ -277,7 +277,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 12. Afficher les unités Backer
+# 12. Display Backer areas
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -331,7 +331,7 @@ print(
   n = Inf
 )
 # ------------------------------------------------------------
-# 13. Fonction de normalisation des noms géographiques
+# 13. Function to normalise geographic names
 # ------------------------------------------------------------
 
 normaliser_nom <- function(x) {
@@ -353,7 +353,7 @@ normaliser_nom <- function(x) {
   x
 }
 # ------------------------------------------------------------
-# 15. Comparaison Liberia DHS / Backer
+# 15. Compare Liberia DHS and Backer
 # ------------------------------------------------------------
 
 liberia_dhs_admin <- gps_clusters %>%
@@ -398,7 +398,7 @@ cat("========================================\n")
 print(comparaison_liberia)
 
 # ------------------------------------------------------------
-# 16. Comparaison Sierra Leone DHS / Backer
+# 16. Compare Sierra Leone DHS and Backer
 # ------------------------------------------------------------
 
 sl_dhs_admin <- gps_clusters %>%
@@ -443,7 +443,7 @@ cat("========================================\n")
 print(comparaison_sl)
 
 # ------------------------------------------------------------
-# 17. Sauvegarder les unités Backer
+# 17. Save Backer areas
 # ------------------------------------------------------------
 
 saveRDS(
@@ -459,7 +459,7 @@ write.csv(
 
 
 # ------------------------------------------------------------
-# 18. Fin
+# 18. End
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

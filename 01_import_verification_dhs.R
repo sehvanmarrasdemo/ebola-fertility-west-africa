@@ -1,27 +1,27 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 01_import_verification_dhs.R
 #
-# Objectif :
-# Importer les fichiers IR et BR des trois pays et vérifier
-# leur structure avant toute transformation.
+# Objective:
+# Import and check IR and BR files for all three countries
+# their structure before any transformation.
 #
-# Pays :
-# - Guinée, DHS 2018
-# - Liberia, DHS 2019-2020
+# Countries:
+# - Guinea, DHS 2018
+# - Liberia, DHS 2019–2020
 # - Sierra Leone, DHS 2019
 #
-# Entrées :
+# Inputs:
 # data_raw/dhs/
 #
-# Sorties :
-# Aucune donnée individuelle transformée.
-# Ce script sert uniquement au contrôle des données brutes.
+# Outputs:
+# No transformed individual-level data.
+# This script is used solely to validate the raw data.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages nécessaires
+# 1. Load required packages
 # ------------------------------------------------------------
 
 library(haven)
@@ -29,10 +29,10 @@ library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Définir les chemins des fichiers bruts
+# 2. Define raw data file paths
 # ------------------------------------------------------------
 
-# Guinée 2018
+# Guinea 2018
 path_gn_ir <- "data_raw/dhs/GN_2018/IR/GNIR71DT/GNIR71FL.DTA"
 path_gn_br <- "data_raw/dhs/GN_2018/BR/GNBR71DT/GNBR71FL.DTA"
 
@@ -46,7 +46,7 @@ path_sl_br <- "data_raw/dhs/SL_2019/BR/SLBR7ADT/SLBR7AFL.DTA"
 
 
 # ------------------------------------------------------------
-# 3. Vérifier que tous les fichiers existent
+# 3. Check that all files exist
 # ------------------------------------------------------------
 
 stopifnot(
@@ -62,8 +62,8 @@ cat("Les 6 fichiers DHS sont présents.\n")
 
 
 # ------------------------------------------------------------
-# 4. Importer les fichiers IR
-# Une ligne = une femme interrogée
+# 4. Import IR files
+# One row = one interviewed woman
 # ------------------------------------------------------------
 
 gn_ir <- read_dta(path_gn_ir)
@@ -72,8 +72,8 @@ sl_ir <- read_dta(path_sl_ir)
 
 
 # ------------------------------------------------------------
-# 5. Importer les fichiers BR
-# Une ligne = une naissance déclarée
+# 5. Import BR files
+# One row = one reported birth
 # ------------------------------------------------------------
 
 gn_br <- read_dta(path_gn_br)
@@ -82,7 +82,7 @@ sl_br <- read_dta(path_sl_br)
 
 
 # ------------------------------------------------------------
-# 6. Vérifier les dimensions des fichiers
+# 6. Check file dimensions
 # ------------------------------------------------------------
 
 cat("\n==============================\n")
@@ -104,7 +104,7 @@ cat("Sierra Leone :", nrow(sl_br), "naissances -", ncol(sl_br), "variables\n")
 
 
 # ------------------------------------------------------------
-# 7. Variables importantes attendues dans les fichiers IR
+# 7. Expected key variables in IR files
 # ------------------------------------------------------------
 
 variables_ir <- c(
@@ -125,7 +125,7 @@ variables_ir <- c(
 
 
 # ------------------------------------------------------------
-# 8. Vérifier la présence des variables IR
+# 8. Check presence of IR variables
 # ------------------------------------------------------------
 
 verifier_variables <- function(data, variables, nom_base) {
@@ -151,7 +151,7 @@ verifier_variables(sl_ir, variables_ir, "Sierra Leone IR")
 
 
 # ------------------------------------------------------------
-# 9. Variables importantes attendues dans les fichiers BR
+# 9. Expected key variables in BR files
 # ------------------------------------------------------------
 
 variables_br <- c(
@@ -178,7 +178,7 @@ variables_br <- c(
 
 
 # ------------------------------------------------------------
-# 10. Vérifier la présence des variables BR
+# 10. Check presence of BR variables
 # ------------------------------------------------------------
 
 verifier_variables(gn_br, variables_br, "Guinée BR")
@@ -187,7 +187,7 @@ verifier_variables(sl_br, variables_br, "Sierra Leone BR")
 
 
 # ------------------------------------------------------------
-# 11. Vérifier l'âge des femmes dans les fichiers IR
+# 11. Check women's age in IR files
 # ------------------------------------------------------------
 
 cat("\n==============================\n")
@@ -220,7 +220,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 12. Vérifier les poids DHS
+# 12. Check DHS sampling weights
 # ------------------------------------------------------------
 
 summary(gn_ir$v005)
@@ -229,7 +229,7 @@ summary(sl_ir$v005)
 
 
 # ------------------------------------------------------------
-# 13. Vérifier le nombre de clusters DHS
+# 13. Check number of DHS clusters
 # ------------------------------------------------------------
 
 cat("\n==============================\n")
@@ -242,7 +242,7 @@ cat("Sierra Leone :", n_distinct(sl_ir$v001), "\n")
 
 
 # ------------------------------------------------------------
-# 14. Vérifier les identifiants individuels
+# 14. Check individual identifiers
 # ------------------------------------------------------------
 
 cat("\n==============================\n")
@@ -269,7 +269,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 15. Résumé final
+# 15. Final summary
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -277,10 +277,10 @@ cat("FIN DE LA VERIFICATION DES DONNEES DHS\n")
 cat("========================================\n")
 cat("Aucune donnée brute n'a été modifiée.\n")
 # ------------------------------------------------------------
-# 15. Vérifier les dates de collecte des enquêtes
+# 15. Check survey fieldwork dates
 # ------------------------------------------------------------
 
-# Vérifier que le mois et l'année de l'entretien existent
+# Check that the interview month and year are present
 variables_date <- c("v006", "v007", "v008")
 
 verifier_variables(gn_ir, variables_date, "Guinée - dates enquête")
@@ -288,7 +288,7 @@ verifier_variables(lb_ir, variables_date, "Liberia - dates enquête")
 verifier_variables(sl_ir, variables_date, "Sierra Leone - dates enquête")
 
 
-# Fonction pour résumer les dates d'entretien
+# Function to summarise interview dates
 resume_dates_enquete <- function(data, pays) {
   
   dates <- data %>%
@@ -328,7 +328,7 @@ resume_dates_enquete(lb_ir, "Liberia")
 resume_dates_enquete(sl_ir, "Sierra Leone")
 
 #----------------------------
-#tABLE DES ENTRETIENS 
+#INTERVIEW TABLE
 
 table(gn_ir$v007, gn_ir$v006)
 table(lb_ir$v007, lb_ir$v006)

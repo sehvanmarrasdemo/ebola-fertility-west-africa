@@ -1,25 +1,25 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 11_jointure_spatiale_clusters.R
 #
-# Objectif :
-# Réaliser les attributions spatiales encore non résolues :
+# Objective:
+# Complete remaining spatial assignments:
 #
-# - Guinée :
-#   401 clusters DHS -> polygones administratifs 2015
+# - Guinea:
+#   401 DHS clusters -> 2015 administrative polygons
 #
-# - Sierra Leone :
-#   29 clusters modernes de Karene -> anciens districts
-#   administratifs compatibles avec la période Ebola
+# - Sierra Leone:
+#   29 modern Karene clusters -> historical districts
+#   administrative areas consistent with the Ebola period
 #
-# Important :
-# Aucune attribution par plus proche voisin n'est effectuée
-# automatiquement.
+# Important:
+# No nearest-neighbour assignment is performed
+# automatically.
 #
-# Entrées :
-# - crosswalk DHS-Backer partiel
-# - polygones Guinée préparés
-# - polygones Sierra Leone préparés
+# Inputs:
+# - partial DHS–Backer crosswalk
+# - prepared Guinea polygons
+# - prepared Sierra Leone polygons
 #
 # ============================================================
 
@@ -33,7 +33,7 @@ library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Chemins
+# 2. Paths
 # ------------------------------------------------------------
 
 path_crosswalk <-
@@ -53,7 +53,7 @@ stopifnot(
 )
 
 # ------------------------------------------------------------
-# 3. Importer les données
+# 3. Import data
 # ------------------------------------------------------------
 
 crosswalk_clusters <- readRDS(
@@ -83,7 +83,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 5. Préparer les clusters GPS de Guinée
+# 5. Prepare Guinea GPS clusters
 # ------------------------------------------------------------
 
 gn_clusters <- crosswalk_clusters %>%
@@ -105,7 +105,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 6. Transformer les clusters Guinée en points sf
+# 6. Convert Guinea clusters to sf points
 # ------------------------------------------------------------
 
 gn_points <- st_as_sf(
@@ -122,11 +122,11 @@ gn_points <- st_as_sf(
   remove = FALSE
 )
 # ------------------------------------------------------------
-# 7. Jointure spatiale Guinée
+# 7. Spatial join for Guinea
 # ------------------------------------------------------------
 
 # ------------------------------------------------------------
-# 7. Jointure spatiale Guinée
+# 7. Spatial join for Guinea
 # ------------------------------------------------------------
 
 gn_jointure <- st_join(
@@ -146,7 +146,7 @@ gn_jointure <- st_join(
 )
 
 # ------------------------------------------------------------
-# 8. Contrôle des doublons après jointure Guinée
+# 8. Check duplicates after Guinea join
 # ------------------------------------------------------------
 
 cat(
@@ -183,7 +183,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 9. Résumé de l'attribution spatiale Guinée
+# 9. Summary of Guinea spatial assignments
 # ------------------------------------------------------------
 
 controle_gn_spatial <- gn_jointure %>%
@@ -237,7 +237,7 @@ print(
   n = Inf
 )
 # ------------------------------------------------------------
-# 10. Nombre de clusters par préfecture
+# 10. Number of clusters per prefecture
 # ------------------------------------------------------------
 
 clusters_par_prefecture_gn <- gn_jointure %>%
@@ -261,7 +261,7 @@ print(
 )
 
 # ------------------------------------------------------------
-# 11. Extraire les clusters de Karene
+# 11. Extract Karene clusters
 # ------------------------------------------------------------
 
 karene_clusters <- crosswalk_clusters %>%
@@ -285,7 +285,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 12. Transformer Karene en points sf
+# 12. Convert Karene to sf points
 # ------------------------------------------------------------
 
 karene_points <- st_as_sf(
@@ -324,7 +324,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 13. Jointure spatiale Karene -> anciens districts
+# 13. Spatial join of Karene to historical districts
 # ------------------------------------------------------------
 
 karene_jointure <- st_join(
@@ -353,7 +353,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 14. Contrôle des doublons Karene
+# 14. Check duplicate Karene assignments
 # ------------------------------------------------------------
 
 doublons_karene <- karene_jointure %>%
@@ -375,7 +375,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 15. Résumé spatial Karene
+# 15. Spatial summary for Karene
 # ------------------------------------------------------------
 
 controle_karene_spatial <- karene_jointure %>%
@@ -402,7 +402,7 @@ cat("========================================\n")
 print(controle_karene_spatial)
 
 # ------------------------------------------------------------
-# 16. Répartition historique des clusters de Karene
+# 16. Historical distribution of Karene clusters
 # ------------------------------------------------------------
 
 repartition_karene <- karene_jointure %>%
@@ -426,10 +426,10 @@ cat("========================================\n")
 
 print(repartition_karene)
 # ------------------------------------------------------------
-# 17. Préparer les attributions spatiales finales
+# 17. Prepare final spatial assignments
 # ------------------------------------------------------------
 
-# Guinée
+# Guinea
 attribution_gn <- gn_jointure %>%
   
   st_drop_geometry() %>%
@@ -453,7 +453,7 @@ attribution_karene <- karene_jointure %>%
     unite_backer_spatial
   )
 # ------------------------------------------------------------
-# 18. Intégrer l'attribution spatiale de Guinée
+# 18. Integrate Guinea's spatial assignments
 # ------------------------------------------------------------
 
 crosswalk_final <- crosswalk_clusters %>%
@@ -493,7 +493,7 @@ crosswalk_final <- crosswalk_clusters %>%
     )
   )
 # ------------------------------------------------------------
-# 19. Intégrer l'attribution historique de Karene
+# 19. Integrate historical assignments for Karene
 # ------------------------------------------------------------
 
 crosswalk_final <- crosswalk_final %>%
@@ -538,7 +538,7 @@ crosswalk_final <- crosswalk_final %>%
       !is.na(unite_backer)
   )
 # ------------------------------------------------------------
-# 20. Contrôle du crosswalk final
+# 20. Check the final crosswalk
 # ------------------------------------------------------------
 
 controle_crosswalk_final <- crosswalk_final %>%
@@ -566,7 +566,7 @@ cat("========================================\n")
 
 print(controle_crosswalk_final)
 # ------------------------------------------------------------
-# 21. Identifier les derniers clusters non attribués
+# 21. Identify remaining unassigned clusters
 # ------------------------------------------------------------
 
 clusters_non_attribues_final <- crosswalk_final %>%
@@ -587,7 +587,7 @@ clusters_non_attribues_final <- crosswalk_final %>%
 print(clusters_non_attribues_final)
 
 # ------------------------------------------------------------
-# 22. Vérifier que toutes les unités attribuées existent chez Backer
+# 22. Check that all assigned areas exist in Backer
 # ------------------------------------------------------------
 
 controle_noms_final <- crosswalk_final %>%
@@ -623,7 +623,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 23. Mesurer l'impact de Mandiana dans la base femme-mois
+# 23. Assess Mandiana's impact on woman-month data
 # ------------------------------------------------------------
 
 base_femme_mois <- readRDS(
@@ -714,7 +714,7 @@ impact_mandiana <- impact_mandiana %>%
 
 print(impact_mandiana)
 # ------------------------------------------------------------
-# 24. Nettoyer et sauvegarder le crosswalk final
+# 24. Clean and save the final crosswalk
 # ------------------------------------------------------------
 
 crosswalk_final <- crosswalk_final %>%
@@ -771,7 +771,7 @@ write.csv(
   row.names = FALSE
 )
 # ------------------------------------------------------------
-# 25. Contrôle final
+# 25. Final check
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

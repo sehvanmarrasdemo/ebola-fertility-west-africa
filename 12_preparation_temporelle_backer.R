@@ -1,6 +1,6 @@
 # ============================================================
 # 12_preparation_temporelle_backer.R
-# Préparation temporelle des données Ebola Backer
+# Temporal preparation of Backer Ebola data
 # ============================================================
 
 library(dplyr)
@@ -9,7 +9,7 @@ library(readr)
 library(lubridate)
 
 # ------------------------------------------------------------
-# 1. Importation des données brutes Backer
+# 1. Import raw Backer data
 # ------------------------------------------------------------
 
 chemin_backer <- "data_raw/backer/countryeboladata.txt"
@@ -22,7 +22,7 @@ backer_raw <- read.delim(
 )
 
 # ------------------------------------------------------------
-# 2. Vérification des colonnes hebdomadaires W1-W74
+# 2. Check weekly columns W1–W74
 # ------------------------------------------------------------
 
 vars_week <- paste0("W", 1:74)
@@ -42,7 +42,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 3. Passage du format large au format long
+# 3. Reshape from wide to long format
 # ------------------------------------------------------------
 
 backer_hebdo <- backer_raw %>%
@@ -58,7 +58,7 @@ backer_hebdo <- backer_raw %>%
   )
 
 # ------------------------------------------------------------
-# 4. Contrôles
+# 4. Checks
 # ------------------------------------------------------------
 
 cat("Nombre de lignes :", nrow(backer_hebdo), "\n")
@@ -89,7 +89,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 5. Contrôle des totaux de cas par pays
+# 5. Check case totals by country
 # ------------------------------------------------------------
 
 controle_totaux_pays <- backer_hebdo %>%
@@ -102,7 +102,7 @@ controle_totaux_pays <- backer_hebdo %>%
 print(controle_totaux_pays)
 
 # ------------------------------------------------------------
-# 6. Agrégation des cas Ebola au niveau mensuel
+# 6. Aggregate Ebola cases by month
 # ------------------------------------------------------------
 
 backer_mensuel <- backer_hebdo %>%
@@ -129,7 +129,7 @@ backer_mensuel <- backer_hebdo %>%
   )
 
 # ------------------------------------------------------------
-# 7. Contrôles
+# 7. Checks
 # ------------------------------------------------------------
 
 cat("Nombre de lignes :", nrow(backer_mensuel), "\n")
@@ -159,7 +159,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 8. Contrôle final des totaux après agrégation mensuelle
+# 8. Final case-total check after monthly aggregation
 # ------------------------------------------------------------
 
 controle_totaux_mensuels <- backer_mensuel %>%
@@ -172,11 +172,11 @@ controle_totaux_mensuels <- backer_mensuel %>%
 print(controle_totaux_mensuels)
 
 # ------------------------------------------------------------
-# 9. Harmonisation des noms de pays
+# 9. Harmonise country names
 # ------------------------------------------------------------
 
 # ------------------------------------------------------------
-# 9. Harmonisation des noms de pays
+# 9. Harmonise country names
 # ------------------------------------------------------------
 
 backer_hebdo <- backer_hebdo %>%
@@ -199,7 +199,7 @@ backer_mensuel <- backer_mensuel %>%
     )
   )
 # ------------------------------------------------------------
-# 10. Sauvegarde des fichiers
+# 10. Save files
 # ------------------------------------------------------------
 
 saveRDS(

@@ -1,18 +1,18 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 10_preparation_polygones_historiques.R
 #
-# Objectif :
-# Importer et contrôler les limites administratives utilisées
-# pour les attributions spatiales restantes.
+# Objective:
+# Import and validate administrative boundaries used
+# for the remaining spatial assignments.
 #
-# Pays concernés :
-# - Guinée : préfectures
-# - Sierra Leone : districts pré-redécoupage de 2017
+# Countries covered:
+# - Guinea: prefectures
+# - Sierra Leone: districts before the 2017 boundary changes
 #
-# IMPORTANT :
-# Aucune jointure DHS -> Backer n'est encore réalisée ici.
-# On valide d'abord les polygones et leurs noms.
+# IMPORTANT:
+# No DHS-to-Backer join is performed at this stage.
+# First validate polygon geometries and names.
 # ============================================================
 
 
@@ -25,7 +25,7 @@ library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Dossiers contenant les shapefiles
+# 2. Folders containing shapefiles
 # ------------------------------------------------------------
 
 dossier_gn <-
@@ -41,7 +41,7 @@ stopifnot(
 )
 
 # ------------------------------------------------------------
-# 3. Identifier automatiquement les fichiers .shp
+# 3. Automatically identify .shp files
 # ------------------------------------------------------------
 
 shp_gn <- list.files(
@@ -65,13 +65,13 @@ print(shp_gn)
 cat("\nFichiers SHP Sierra Leone :\n")
 print(shp_sl)
 
-# On veut exactement un shapefile dans chaque dossier
+# Exactly one shapefile is expected in each folder
 
 stopifnot(
   length(shp_gn) == 1,
   length(shp_sl) == 1
 )# ------------------------------------------------------------
-# 4. Importer les polygones
+# 4. Import polygons
 # ------------------------------------------------------------
 
 gn_admin2 <- st_read(
@@ -107,7 +107,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 6. Noms des variables
+# 6. Variable names
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -123,7 +123,7 @@ cat("========================================\n")
 
 print(names(sl_admin2))
 # ------------------------------------------------------------
-# 7. Géométrie
+# 7. Geometry
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -161,7 +161,7 @@ print(st_crs(gn_admin2))
 print(st_crs(sl_admin2))
 
 # ------------------------------------------------------------
-# 9. Validité des géométries
+# 9. Geometry validity
 # ------------------------------------------------------------
 
 controle_geometrie <- data.frame(
@@ -190,7 +190,7 @@ cat("========================================\n")
 print(controle_geometrie)
 
 # ------------------------------------------------------------
-# 10. Unités administratives
+# 10. Administrative areas
 # ------------------------------------------------------------
 
 if ("NAME_2" %in% names(gn_admin2)) {
@@ -248,7 +248,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 11. Comparer les noms des polygones avec Backer
+# 11. Compare polygon names against Backer
 # ------------------------------------------------------------
 
 normaliser_nom <- function(x) {
@@ -271,12 +271,12 @@ normaliser_nom <- function(x) {
 }
 
 
-# Importer les unités Backer
+# Import Backer areas
 backer_unites <- readRDS(
   "data_intermediate/backer_unites_3pays.rds"
 )
 # ------------------------------------------------------------
-# 12. Comparaison Guinée : polygones / Backer
+# 12. Guinea comparison: polygons / Backer
 # ------------------------------------------------------------
 
 gn_polygones_noms <- gn_admin2 %>%
@@ -312,7 +312,7 @@ print(
 )
 
 # ------------------------------------------------------------
-# 13. Comparaison Sierra Leone : polygones / Backer
+# 13. Sierra Leone comparison: polygons / Backer
 # ------------------------------------------------------------
 
 sl_polygones_noms <- sl_admin2 %>%
@@ -344,7 +344,7 @@ print(
 )
 
 # ------------------------------------------------------------
-# 14. Harmoniser les noms des polygones Guinée avec Backer
+# 14. Harmonise Guinea polygon names with Backer
 # ------------------------------------------------------------
 
 gn_admin2_prepare <- gn_admin2 %>%
@@ -355,7 +355,7 @@ gn_admin2_prepare <- gn_admin2 %>%
     
     nom_corrige = case_when(
       
-      # Correction de nomenclature
+      # Naming harmonisation
       NAME_2 == "Yamou" ~ "Yomou",
       
       TRUE ~ NAME_2
@@ -402,7 +402,7 @@ gn_admin2_prepare %>%
   )
 
 # ------------------------------------------------------------
-# 15. Harmoniser les noms Sierra Leone avec Backer
+# 15. Harmonise Sierra Leone names with Backer
 # ------------------------------------------------------------
 
 sl_admin2_prepare <- sl_admin2 %>%
@@ -452,7 +452,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 16. Sauvegarder les polygones préparés
+# 16. Save prepared polygons
 # ------------------------------------------------------------
 
 saveRDS(

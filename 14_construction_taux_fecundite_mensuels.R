@@ -1,13 +1,13 @@
 # ============================================================
 # 14_construction_taux_fecundite_mensuels.R
-# Construction des taux mensuels de fécondité
-# unité Backer × groupe d'âge × mois
+# Construction of monthly fertility rates
+# Backer area × age group × month
 # ============================================================
 
 library(dplyr)
 
 # ------------------------------------------------------------
-# 1. Importation de la base femme-mois avec exposition Ebola
+# 1. Import woman-month data with Ebola exposure
 # ------------------------------------------------------------
 
 femme_mois_ebola <- readRDS(
@@ -15,7 +15,7 @@ femme_mois_ebola <- readRDS(
 )
 
 # ------------------------------------------------------------
-# 2. Contrôles des poids DHS
+# 2. Checks of DHS sampling weights
 # ------------------------------------------------------------
 
 cat("Nombre de lignes :", nrow(femme_mois_ebola), "\n")
@@ -47,7 +47,7 @@ print(
 )
 
 # ------------------------------------------------------------
-# 3. Construction des cellules unité × âge × mois
+# 3. Construct area × age × month cells
 # ------------------------------------------------------------
 
 taux_fecundite_mensuels <- femme_mois_ebola %>%
@@ -61,19 +61,19 @@ taux_fecundite_mensuels <- femme_mois_ebola %>%
   ) %>%
   summarise(
     
-    # Nombre de femmes-mois non pondéré
+    # Unweighted number of woman-months
     femmes_mois_n = n(),
     
-    # Femmes-mois pondérées DHS
+    # DHS-weighted woman-months
     femmes_mois_ponderees = sum(poids),
     
-    # Nombre de naissances observées non pondéré
+    # Unweighted number of observed births
     naissances_n = sum(nb_naissances),
     
-    # Nombre de naissances pondéré
+    # Weighted number of births
     naissances_ponderees = sum(nb_naissances * poids),
     
-    # Exposition Ebola de l'unité pendant ce mois
+    # Ebola exposure in the area during this month
     cas_mois_exposition = first(cas_mois_exposition),
     
     cas_mois_pour_10000_exposition =
@@ -85,8 +85,8 @@ taux_fecundite_mensuels <- femme_mois_ebola %>%
   ) %>%
   mutate(
     
-    # Taux mensuel de fécondité réalisée
-    # pour 1 000 femmes-mois
+    # Monthly realised fertility rate
+    # per 1,000 woman-months
     taux_fecundite_1000 =
       (naissances_ponderees / femmes_mois_ponderees) * 1000
   )
@@ -123,7 +123,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 4. Contrôle de la taille des cellules
+# 4. Check cell sizes
 # ------------------------------------------------------------
 
 summary(taux_fecundite_mensuels$femmes_mois_n)
@@ -165,7 +165,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 5. Vérification de la constance de l'exposition dans les cellules
+# 5. Check exposure consistency within cells
 # ------------------------------------------------------------
 
 controle_exposition_cellules <- femme_mois_ebola %>%
@@ -204,7 +204,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 6. Sauvegarde des taux mensuels de fécondité
+# 6. Save monthly fertility rates
 # ------------------------------------------------------------
 
 saveRDS(

@@ -1,38 +1,38 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 04_controle_historique_naissances.R
 #
-# Objectif :
-# Vérifier la qualité et la cohérence des dates de naissance
-# déclarées dans les historiques DHS avant de construire
-# la base femme-mois.
+# Objective:
+# Check the quality and consistency of birth dates
+# reported in DHS birth histories before constructing
+# the woman-month dataset.
 #
-# Pays :
-# - Guinée, DHS 2018
-# - Liberia, DHS 2019-2020
+# Countries:
+# - Guinea, DHS 2018
+# - Liberia, DHS 2019–2020
 # - Sierra Leone, DHS 2019
 #
-# Entrée :
+# Input:
 # data_intermediate/dhs_naissances_harmonisees.rds
 #
-# Sortie :
+# Output:
 # outputs/tables/controle_historique_naissances.csv
 #
-# Important :
-# Ce script ne corrige ni ne supprime aucune observation.
-# Il sert uniquement au contrôle de qualité.
+# Important:
+# This script neither corrects nor removes any observation.
+# It is used solely for quality control.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages
+# 1. Load packages
 # ------------------------------------------------------------
 
 library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Importer la base harmonisée des naissances
+# 2. Import harmonised birth dataset
 # ------------------------------------------------------------
 
 path_naissances <- "data_intermediate/dhs_naissances_harmonisees.rds"
@@ -43,7 +43,7 @@ dhs_naissances <- readRDS(path_naissances)
 
 
 # ------------------------------------------------------------
-# 3. Vérification générale
+# 3. General checks
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -62,7 +62,7 @@ dhs_naissances %>%
 
 
 # ------------------------------------------------------------
-# 4. Vérifier les valeurs manquantes
+# 4. Check missing values
 # ------------------------------------------------------------
 
 controle_manquants <- dhs_naissances %>%
@@ -96,7 +96,7 @@ print(controle_manquants)
 
 
 # ------------------------------------------------------------
-# 5. Vérifier que le mois de naissance est compris entre 1 et 12
+# 5. Check that birth month is between 1 and 12
 # ------------------------------------------------------------
 
 controle_mois <- dhs_naissances %>%
@@ -117,10 +117,10 @@ print(controle_mois)
 
 
 # ------------------------------------------------------------
-# 6. Vérifier la cohérence entre mois, année et CMC
+# 6. Check consistency between month, year, and CMC
 #
-# Formule DHS :
-# CMC = (année - 1900) * 12 + mois
+# DHS formula:
+# CMC = (year - 1900) * 12 + month
 # ------------------------------------------------------------
 
 controle_cmc <- dhs_naissances %>%
@@ -149,7 +149,7 @@ print(controle_cmc)
 
 
 # ------------------------------------------------------------
-# 7. Vérifier qu'aucune naissance n'est datée après l'interview
+# 7. Check that no birth is dated after interview
 # ------------------------------------------------------------
 
 controle_apres_interview <- dhs_naissances %>%
@@ -174,7 +174,7 @@ print(controle_apres_interview)
 
 
 # ------------------------------------------------------------
-# 8. Vérifier les années de naissance observées
+# 8. Check observed birth years
 # ------------------------------------------------------------
 
 controle_periode <- dhs_naissances %>%
@@ -197,10 +197,10 @@ print(controle_periode)
 
 
 # ------------------------------------------------------------
-# 9. Calculer l'âge approximatif de la mère à chaque naissance
+# 9. Calculate approximate mother's age at each birth
 #
-# Cette variable sert ici uniquement au contrôle.
-# Elle est exprimée en mois puis en années.
+# This variable is used only for validation here.
+# It is expressed in months and then years.
 # ------------------------------------------------------------
 
 controle_age_mere <- dhs_naissances %>%
@@ -236,7 +236,7 @@ print(controle_age_mere)
 
 
 # ------------------------------------------------------------
-# 10. Construire un tableau récapitulatif
+# 10. Build a summary table
 # ------------------------------------------------------------
 
 controle_historique <- controle_manquants %>%
@@ -270,7 +270,7 @@ print(controle_historique)
 
 
 # ------------------------------------------------------------
-# 11. Sauvegarder le tableau de contrôle
+# 11. Save the validation table
 # ------------------------------------------------------------
 
 write.csv(
@@ -281,7 +281,7 @@ write.csv(
 
 
 # ------------------------------------------------------------
-# 12. Fin
+# 12. End
 # ------------------------------------------------------------
 
 cat("\n========================================\n")

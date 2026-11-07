@@ -1,26 +1,26 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 09_crosswalk_dhs_backer.R
 #
-# Objectif :
-# Construire une première correspondance entre les clusters DHS
-# et les unités administratives utilisées par Backer.
+# Objective:
+# Construct an initial match between DHS clusters
+# and administrative areas used by Backer.
 #
-# Attribution :
-# - Liberia : correspondance administrative directe
-# - Sierra Leone : correspondance directe + recodages historiques
-# - Guinée : attribution spatiale à réaliser ultérieurement
+# Assignment:
+# - Liberia: direct administrative matching
+# - Sierra Leone: direct matching plus historical recoding
+# - Guinea: spatial assignment to be performed later
 #
-# Cas encore non résolu spatialement :
-# - Guinée : préfectures
-# - Sierra Leone : Karene, créé après la période Ebola à partir
-#   de portions de plusieurs anciens districts
+# Cases still unresolved spatially:
+# - Guinea: prefectures
+# - Sierra Leone: Karene, created after the Ebola period from
+#   parts of several historical districts
 #
-# Entrées :
+# Inputs:
 # - data_intermediate/gps_clusters_dhs_harmonises.rds
 # - data_intermediate/backer_unites_3pays.rds
 #
-# Sorties :
+# Outputs:
 # - data_intermediate/crosswalk_dhs_backer_partiel.rds
 # - outputs/tables/crosswalk_dhs_backer_partiel.csv
 # ============================================================
@@ -34,7 +34,7 @@ library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Importer les données
+# 2. Import data
 # ------------------------------------------------------------
 
 path_gps <-
@@ -55,7 +55,7 @@ gps_clusters <- readRDS(path_gps)
 backer_unites <- readRDS(path_backer)
 
 # ------------------------------------------------------------
-# 3. Vérifier les dimensions
+# 3. Check dimensions
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -85,7 +85,7 @@ backer_unites %>%
   print()
 
 # ------------------------------------------------------------
-# 5. Ajouter la méthode d'attribution
+# 5. Add assignment method
 # ------------------------------------------------------------
 
 crosswalk_clusters <- crosswalk_clusters %>%
@@ -124,7 +124,7 @@ crosswalk_clusters <- crosswalk_clusters %>%
   )
 
 # ------------------------------------------------------------
-# 6. Contrôle des attributions
+# 6. Check assignments
 # ------------------------------------------------------------
 
 controle_attribution <- crosswalk_clusters %>%
@@ -153,7 +153,7 @@ cat("========================================\n")
 print(controle_attribution)
 
 # ------------------------------------------------------------
-# 7. Identifier les clusters non résolus
+# 7. Identify unresolved clusters
 # ------------------------------------------------------------
 
 clusters_non_resolus <- crosswalk_clusters %>%
@@ -181,7 +181,7 @@ cat("========================================\n")
 
 print(clusters_non_resolus)
 # ------------------------------------------------------------
-# 8. Contrôle spécifique de Karene
+# 8. Karene-specific checks
 # ------------------------------------------------------------
 
 controle_karene <- crosswalk_clusters %>%
@@ -204,7 +204,7 @@ cat("========================================\n")
 print(controle_karene)
 
 # ------------------------------------------------------------
-# 9. Vérifier les noms avec Backer
+# 9. Check names against Backer
 # ------------------------------------------------------------
 
 attributions_invalides <- crosswalk_clusters %>%
@@ -246,7 +246,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 10. Vérifier l'unicité pays × cluster
+# 10. Check uniqueness of country × cluster
 # ------------------------------------------------------------
 
 doublons_crosswalk <- crosswalk_clusters %>%
@@ -268,7 +268,7 @@ cat(
 )
 
 # ------------------------------------------------------------
-# 11. Sauvegarder le crosswalk partiel
+# 11. Save the partial crosswalk
 # ------------------------------------------------------------
 
 saveRDS(

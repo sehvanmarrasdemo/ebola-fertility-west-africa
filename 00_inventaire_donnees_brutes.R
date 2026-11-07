@@ -1,38 +1,38 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 00_inventaire_donnees_brutes.R
 #
-# Objectif :
-# Vérifier la présence des fichiers DHS bruts nécessaires
-# pour la Guinée, le Liberia et la Sierra Leone.
+# Objective:
+# Check that the required raw DHS files are available
+# for Guinea, Liberia, and Sierra Leone.
 #
-# Entrées :
+# Inputs:
 # data_raw/dhs/
 #
-# Sorties :
-# Aucune base transformée.
+# Outputs:
+# No transformed dataset.
 #
-# Important :
-# Ce script ne modifie aucune donnée brute.
+# Important:
+# This script does not modify any raw data.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Vérifier le répertoire de travail
+# 1. Check the working directory
 # ------------------------------------------------------------
 
 getwd()
 
 
 # ------------------------------------------------------------
-# 2. Vérifier que le dossier DHS existe
+# 2. Check that the DHS directory exists
 # ------------------------------------------------------------
 
 dir.exists("data_raw/dhs")
 
 
 # ------------------------------------------------------------
-# 3. Lister tous les fichiers présents dans data_raw/dhs
+# 3. List all files under data_raw/dhs
 # ------------------------------------------------------------
 
 tous_fichiers_dhs <- list.files(
@@ -45,7 +45,7 @@ tous_fichiers_dhs
 
 
 # ------------------------------------------------------------
-# 4. Rechercher les fichiers Stata (.DTA)
+# 4. Find Stata files (.DTA)
 # ------------------------------------------------------------
 
 fichiers_dta <- list.files(
@@ -60,14 +60,14 @@ fichiers_dta
 
 
 # ------------------------------------------------------------
-# 5. Compter les fichiers Stata trouvés
+# 5. Count the Stata files found
 # ------------------------------------------------------------
 
 length(fichiers_dta)
 
 
 # ------------------------------------------------------------
-# 6. Rechercher les fichiers géographiques DHS (.shp)
+# 6. Find DHS geographic files (.shp)
 # ------------------------------------------------------------
 
 fichiers_gps <- list.files(
@@ -82,14 +82,14 @@ fichiers_gps
 
 
 # ------------------------------------------------------------
-# 7. Compter les fichiers GPS trouvés
+# 7. Count the GPS files found
 # ------------------------------------------------------------
 
 length(fichiers_gps)
 
 
 # ------------------------------------------------------------
-# 8. Résumé simple de l'inventaire
+# 8. Summarise the file inventory
 # ------------------------------------------------------------
 
 cat("\n----------------------------------------\n")

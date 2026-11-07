@@ -1,41 +1,41 @@
 # ============================================================
-# MEMOIRE - Ebola et fécondité en Afrique de l'Ouest
+# THESIS - Ebola and fertility in West Africa
 # Script : 07_controle_gps_dhs.R
 #
-# Objectif :
-# Importer et contrôler les fichiers GPS DHS des trois pays.
+# Objective:
+# Import and validate DHS GPS files for the three countries.
 #
-# Cette étape vérifie :
-# - le nombre de clusters géographiques ;
-# - les variables disponibles ;
-# - le système de coordonnées ;
-# - le type de géométrie ;
-# - la correspondance avec les clusters présents
-#   dans la base femme-mois.
+# This step checks:
+# - number of geographic clusters;
+# - available variables;
+# - coordinate reference system;
+# - geometry type;
+# - the match with clusters present
+#   in the woman-month dataset.
 #
-# Pays :
-# - Guinée DHS 2018
-# - Liberia DHS 2019-2020
+# Countries:
+# - Guinea DHS 2018
+# - Liberia DHS 2019–2020
 # - Sierra Leone DHS 2019
 #
-# Entrées :
+# Inputs:
 # data_raw/dhs/.../GPS/
 #
-# Base de comparaison :
+# Comparison dataset:
 # data_intermediate/base_femme_mois_15_39.rds
 #
-# Sortie :
-# Aucune jointure géographique définitive à ce stade.
+# Output:
+# No final geographic join at this stage.
 #
-# Important :
-# Les coordonnées GPS DHS sont déplacées pour protéger
-# la confidentialité des enquêtées. La précision spatiale
-# devra donc être prise en compte dans l'interprétation.
+# Important:
+# DHS GPS coordinates are displaced to protect
+# respondents' confidentiality. Spatial precision
+# must therefore be considered in the interpretation.
 # ============================================================
 
 
 # ------------------------------------------------------------
-# 1. Charger les packages
+# 1. Load packages
 # ------------------------------------------------------------
 
 library(sf)
@@ -43,7 +43,7 @@ library(dplyr)
 
 
 # ------------------------------------------------------------
-# 2. Définir les chemins des fichiers GPS
+# 2. Define GPS file paths
 # ------------------------------------------------------------
 
 path_gn_gps <-
@@ -57,7 +57,7 @@ path_sl_gps <-
 
 
 # ------------------------------------------------------------
-# 3. Vérifier que les fichiers existent
+# 3. Check that files exist
 # ------------------------------------------------------------
 
 stopifnot(
@@ -68,7 +68,7 @@ stopifnot(
 
 
 # ------------------------------------------------------------
-# 4. Importer les fichiers GPS
+# 4. Import GPS files
 # ------------------------------------------------------------
 
 gn_gps <- st_read(
@@ -88,7 +88,7 @@ sl_gps <- st_read(
 
 
 # ------------------------------------------------------------
-# 5. Vérifier le nombre de lignes et variables
+# 5. Check number of rows and variables
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -121,7 +121,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 6. Afficher les noms de variables disponibles
+# 6. Display available variable names
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -146,8 +146,8 @@ print(names(sl_gps))
 
 
 # ------------------------------------------------------------
-# 7. Rechercher automatiquement les variables potentiellement
-# utiles pour la géographie
+# 7. Automatically search for potentially
+# useful for geographic matching
 # ------------------------------------------------------------
 
 trouver_variables_geo <- function(data) {
@@ -179,7 +179,7 @@ print(trouver_variables_geo(sl_gps))
 
 
 # ------------------------------------------------------------
-# 8. Vérifier le type de géométrie
+# 8. Check geometry type
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -206,7 +206,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 9. Vérifier le système de coordonnées
+# 9. Check coordinate reference system
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -233,7 +233,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 10. Vérifier l'étendue géographique
+# 10. Check geographic extent
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -251,7 +251,7 @@ print(st_bbox(sl_gps))
 
 
 # ------------------------------------------------------------
-# 11. Vérifier si DHSCLUST est présent
+# 11. Check whether DHSCLUST is present
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -278,7 +278,7 @@ cat(
 
 
 # ------------------------------------------------------------
-# 12. Si DHSCLUST existe, compter les clusters uniques
+# 12. If DHSCLUST exists, count unique clusters
 # ------------------------------------------------------------
 
 if ("DHSCLUST" %in% names(gn_gps)) {
@@ -309,7 +309,7 @@ if ("DHSCLUST" %in% names(sl_gps)) {
 }
 
 # ------------------------------------------------------------
-# 12b. Vérifier les coordonnées GPS nulles ou manquantes
+# 12b. Check zero or missing GPS coordinates
 # ------------------------------------------------------------
 
 coordonnees_gps <- bind_rows(
@@ -368,8 +368,8 @@ cat("========================================\n")
 print(controle_coordonnees)
 
 # ------------------------------------------------------------
-# 12c. Mesurer l'importance des clusters sans coordonnées
-# dans la base femme-mois
+# 12c. Assess the extent of clusters without coordinates
+# in the woman-month dataset
 # ------------------------------------------------------------
 
 clusters_invalides <- coordonnees_gps %>%
@@ -414,7 +414,7 @@ cat("========================================\n")
 print(impact_clusters_invalides)
 
 # ------------------------------------------------------------
-# 12d. Part de l'échantillon concernée
+# 12d. Share of the sample affected
 # ------------------------------------------------------------
 
 totaux_pays <- base_femme_mois %>%
@@ -461,8 +461,8 @@ impact_clusters_invalides <- impact_clusters_invalides %>%
 print(impact_clusters_invalides)
 
 # ------------------------------------------------------------
-# 12e. Informations administratives disponibles
-# pour les clusters sans coordonnées
+# 12e. Available administrative information
+# for clusters with missing coordinates
 # ------------------------------------------------------------
 
 gps_admin <- bind_rows(
@@ -508,7 +508,7 @@ clusters_invalides_admin <- clusters_invalides %>%
 
 print(clusters_invalides_admin)
 # ------------------------------------------------------------
-# 13. Importer la base femme-mois
+# 13. Import woman-month dataset
 # ------------------------------------------------------------
 
 base_femme_mois <- readRDS(
@@ -517,7 +517,7 @@ base_femme_mois <- readRDS(
 
 
 # ------------------------------------------------------------
-# 14. Nombre de clusters dans la base femme-mois
+# 14. Number of clusters in woman-month data
 # ------------------------------------------------------------
 
 clusters_femme_mois <- base_femme_mois %>%
@@ -539,7 +539,7 @@ print(clusters_femme_mois)
 
 
 # ------------------------------------------------------------
-# 15. Comparaison IR / GPS si DHSCLUST existe
+# 15. Compare IR and GPS if DHSCLUST exists
 # ------------------------------------------------------------
 
 if (
@@ -584,7 +584,7 @@ if (
     )
   
   
-  # Clusters présents dans la base mais absents du GPS
+  # Clusters present in the dataset but absent from GPS
   clusters_sans_gps <- clusters_calendrier %>%
     anti_join(
       gps_clusters,
@@ -595,7 +595,7 @@ if (
     )
   
   
-  # Clusters GPS ne contribuant pas à la base 15-39
+  # GPS clusters not contributing to the age-15–39 dataset
   gps_sans_calendrier <- gps_clusters %>%
     anti_join(
       clusters_calendrier,
@@ -623,7 +623,7 @@ if (
   )
 }
 # ------------------------------------------------------------
-# 16. Inventaire des unités administratives DHS
+# 16. Inventory DHS administrative units
 # ------------------------------------------------------------
 
 admin_gn <- gn_gps %>%
@@ -725,7 +725,7 @@ cat(
   "\n"
 )
 # ------------------------------------------------------------
-# 16. Fin
+# 16. End
 # ------------------------------------------------------------
 
 cat("\n========================================\n")
@@ -736,7 +736,7 @@ cat(
   "Aucune attribution administrative n'a encore été réalisée.\n"
 )
 # ------------------------------------------------------------
-# 17. Construire une base harmonisée des clusters GPS DHS
+# 17. Create a harmonised DHS GPS cluster dataset
 # ------------------------------------------------------------
 
 gps_clusters_harmonises <- bind_rows(
@@ -787,7 +787,7 @@ gps_clusters_harmonises <- bind_rows(
   )
 
 
-# Vérification
+# Verification
 gps_clusters_harmonises %>%
   count(
     pays,
@@ -796,7 +796,7 @@ gps_clusters_harmonises %>%
   print()
 
 
-# Sauvegarde
+# Saving outputs
 saveRDS(
   gps_clusters_harmonises,
   "data_intermediate/gps_clusters_dhs_harmonises.rds"

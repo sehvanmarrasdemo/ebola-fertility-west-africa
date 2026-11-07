@@ -41,7 +41,7 @@ No DHS survey records, cluster coordinates, participant-level derived datasets, 
 The constructed outcomes represent retrospective, realised fertility rates rather than directly observed conceptions. Survey cluster GPS coordinates are displaced for confidentiality and capture residence at interview rather than necessarily at the epidemic date. Geographic exposure misclassification is therefore possible. 
 ## Status
 
-Pipeline documented through monthly weighted fertility-rate construction (`14`). Descriptive analysis, model estimation, and sensitivity checks are separate ongoing thesis work and are not presented as completed here.
+The data preparation and harmonisation pipeline has been developed through the construction of weighted monthly fertility rates (Script 14). The project is currently progressing towards descriptive analyses, statistical modelling, and robustness checks to investigate the relationship between local Ebola exposure and fertility dynamics.
 
 ## Attribution
 

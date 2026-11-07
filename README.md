@@ -12,7 +12,7 @@ How did fertility patterns evolve around the Ebola epidemic, and to what extent 
 
 ## Data and workflow
 
-The pipeline uses post-Ebola DHS surveys from Guinea (2018), Liberia (2019–2020), and Sierra Leone (2019), alongside weekly subnational Ebola incidence data from Backer and collaborators (December 2013–May 2015).
+The pipeline uses post-Ebola DHS surveys from Guinea (2018), Liberia (2019–2020), and Sierra Leone (2019), alongside weekly subnational Ebola incidence data from Backer and Wallinga (2016) (December 2013–May 2015).
 
 The scripts prepare the survey records, reconstruct woman-month histories, match DHS clusters to historical Ebola reporting areas, and calculate weighted monthly fertility rates.
 

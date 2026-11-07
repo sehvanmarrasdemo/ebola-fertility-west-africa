@@ -38,8 +38,7 @@ No DHS survey records, cluster coordinates, participant-level derived datasets, 
 
 ## Interpretation and limitations
 
-The constructed outcomes represent retrospective, realised fertility rates rather than directly observed conceptions. Survey cluster GPS coordinates are displaced for confidentiality and capture residence at interview rather than necessarily at the epidemic date. Geographic exposure misclassification is therefore possible. The code describes a data-processing pipeline; it does not by itself establish a causal effect of Ebola on fertility.
-
+The constructed outcomes represent retrospective, realised fertility rates rather than directly observed conceptions. Survey cluster GPS coordinates are displaced for confidentiality and capture residence at interview rather than necessarily at the epidemic date. Geographic exposure misclassification is therefore possible. 
 ## Status
 
 Pipeline documented through monthly weighted fertility-rate construction (`14`). Descriptive analysis, model estimation, and sensitivity checks are separate ongoing thesis work and are not presented as completed here.
